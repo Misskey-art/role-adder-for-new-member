@@ -29,7 +29,9 @@ jobs:
           pr=$( (git log --oneline @..."$version_string" || git log --oneline) | sed -nE 's/.+\((#[0-9]+)\)$/\1/p')
           labels=$( echo "$pr" | xargs -n1 gh pr view --json labels -q '.labels[].name')
           mapfile -t version < <(printf '%s\n' "${version_string//./$'\n'}")
-          if printf '%s\n' "${labels[@]}" | grep -qx 'semver:major'; then
+          if printf '%s\n' "${labels[@]}" | grep -qx 'release'; then
+            exit 0
+          elif printf '%s\n' "${labels[@]}" | grep -qx 'semver:major'; then
             ((++version[0]))
             version[1]=0
             version[2]=0
@@ -38,7 +40,7 @@ jobs:
             version[2]=0
           elif printf '%s\n' "${labels[@]}" | grep -qx 'semver:patch'; then
             ((++version[2]))
-          elif printf '%s\n' "${labels[@]}" | grep -qx 'semver:none'; then
+          else
             exit 0
           fi
           new_version_string=$(printf ".%s" "${version[@]}")
