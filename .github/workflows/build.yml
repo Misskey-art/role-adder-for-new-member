@@ -13,8 +13,7 @@ env:
 
 jobs:
   build:
-    permissions:
-      contents: write
+    permissions: {}
     strategy:
       fail-fast: false
       matrix:
@@ -81,6 +80,8 @@ jobs:
   docker:
     if: ${{ github.event_name != 'pull_request' }}
     needs: build
+    permissions:
+      packages: write
     runs-on: 'ubuntu-22.04'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
